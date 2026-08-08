@@ -42,87 +42,91 @@ document.addEventListener("keydown", e => { if(e.key === "Escape") closeLightbox
 const canvas = $("#ecgCanvas");
 const ctx = canvas.getContext("2d");
 
-let ecgX = 0;
-let lastTime = 0;
-let points = [];
+let ecgTime = 0;
+let lastFrame = 0;
+let ecgPoints = [];
 
 function resizeCanvas() {
-  const r = canvas.getBoundingClientRect();
+  const rect = canvas.getBoundingClientRect();
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
-  canvas.width = Math.floor(r.width * dpr);
-  canvas.height = Math.floor(r.height * dpr);
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
 
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-  points = [];
-  ecgX = 0;
+  ecgPoints = [];
+  ecgTime = 0;
 }
 
-function ecgValue(t) {
-  const cycle = 0.85;
+function ecgWave(t) {
+  // 约75 BPM
+  const cycle = 0.8;
   const p = t % cycle;
 
-  let y = 0;
+  let v = 0;
 
   // P wave
-  if (p > 0.08 && p < 0.18) {
-    y -= Math.sin((p - 0.08) / 0.1 * Math.PI) * 8;
+  if (p > 0.10 && p < 0.18) {
+    v -= Math.sin((p - 0.10) / 0.08 * Math.PI) * 7;
   }
 
   // Q wave
-  if (p > 0.25 && p < 0.28) {
-    y += Math.sin((p - 0.25) / 0.03 * Math.PI) * 8;
+  if (p > 0.27 && p < 0.30) {
+    v += Math.sin((p - 0.27) / 0.03 * Math.PI) * 12;
   }
 
   // R wave
-  if (p > 0.28 && p < 0.32) {
-    y -= Math.sin((p - 0.28) / 0.04 * Math.PI) * 45;
+  if (p > 0.30 && p < 0.34) {
+    v -= Math.sin((p - 0.30) / 0.04 * Math.PI) * 55;
   }
 
   // S wave
-  if (p > 0.32 && p < 0.36) {
-    y += Math.sin((p - 0.32) / 0.04 * Math.PI) * 18;
+  if (p > 0.34 && p < 0.39) {
+    v += Math.sin((p - 0.34) / 0.05 * Math.PI) * 25;
   }
 
   // T wave
-  if (p > 0.50 && p < 0.66) {
-    y -= Math.sin((p - 0.50) / 0.16 * Math.PI) * 12;
+  if (p > 0.52 && p < 0.70) {
+    v -= Math.sin((p - 0.52) / 0.18 * Math.PI) * 15;
   }
 
-  return y;
+  return v;
 }
 
 function drawECG(time) {
-  if (!lastTime) lastTime = time;
+  if (!lastFrame) lastFrame = time;
 
-  const dt = (time - lastTime) / 1000;
-  lastTime = time;
+  const delta = (time - lastFrame) / 1000;
+  lastFrame = time;
 
   const w = canvas.clientWidth;
   const h = canvas.clientHeight;
 
-  ctx.clearRect(0, 0, w, h);
+  ecgTime += delta;
 
-  ecgX += dt * 100;
+  const x = (ecgTime * 120) % w;
 
-  if (ecgX > w) {
-    ecgX = 0;
-    points = [];
+  if (x < 2) {
+    ecgPoints = [];
   }
 
-  points.push({
-    x: ecgX,
-    y: h / 2 + ecgValue(ecgX / 100)
+  ecgPoints.push({
+    x,
+    y: h / 2 + ecgWave(ecgTime)
   });
+
+  ctx.clearRect(0, 0, w, h);
 
   ctx.beginPath();
 
-  for (let i = 0; i < points.length; i++) {
+  for (let i = 0; i < ecgPoints.length; i++) {
+    const point = ecgPoints[i];
+
     if (i === 0) {
-      ctx.moveTo(points[i].x, points[i].y);
+      ctx.moveTo(point.x, point.y);
     } else {
-      ctx.lineTo(points[i].x, points[i].y);
+      ctx.lineTo(point.x, point.y);
     }
   }
 
