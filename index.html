@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#081522">
+  <meta name="description" content="よこきょう的主页 — Aviation · EMS · Photography">
+  <title>よこきょう的主页 | WELYOKOYOems</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <div class="stars" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <a class="brand" href="#home" aria-label="返回首页">
+      <span class="brand-dot"></span>
+      <span>WELYOKOYO<span class="accent">EMS</span></span>
+    </a>
+    <nav>
+      <a href="#home">首页</a>
+      <a href="#about">关于</a>
+      <a href="#ems">EMS</a>
+      <a href="#interests">兴趣</a>
+      <a href="#gallery">相册</a>
+    </nav>
+    <button class="menu" id="menuBtn" aria-label="打开菜单">☰</button>
+  </header>
+
+  <main>
+    <section id="home" class="hero section">
+      <div class="hero-grid"></div>
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="pulse"></span> PERSONAL EMS SYSTEM / 01</div>
+        <h1>よこきょう的主页</h1>
+        <p class="subtitle">Aviation · EMS · Photography</p>
+        <p class="tagline">Always Ready to Save Lives.</p>
+        <div class="hero-actions">
+          <a class="btn primary" href="#ems">进入 EMS Dashboard</a>
+          <a class="btn ghost" href="#interests">探索我的兴趣</a>
+        </div>
+        <div class="status-line">
+          <span>● SYSTEM ONLINE</span>
+          <span id="heroTime">Japan --:--:--</span>
+        </div>
+      </div>
+      <div class="avatar-wrap">
+        <div class="scan-ring"></div>
+        <img src="assets/images/avatar.jpg" alt="よこきょう的头像" class="avatar">
+        <div class="avatar-label">YOKOKYO / ONLINE</div>
+      </div>
+    </section>
+
+    <section id="about" class="section">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">ABOUT / 02</div>
+          <h2>关于我</h2>
+        </div>
+        <p>一个把航空、EMS与摄影放进同一块屏幕里的个人空间。</p>
+      </div>
+      <div class="about-grid">
+        <article class="glass about-card">
+          <span class="card-index">01</span>
+          <h3>よこきょう</h3>
+          <p>欢迎来到我的个人主页。这里记录我的兴趣、照片，以及我对航空与院前急救主题的关注。</p>
+          <div class="mini-tags"><span>AVIATION</span><span>EMS</span><span>PHOTO</span></div>
+        </article>
+        <article class="glass about-card">
+          <span class="card-index">02</span>
+          <h3>本站状态</h3>
+          <div class="stat-row"><span>Website</span><strong>WELYOKOYOems</strong></div>
+          <div class="stat-row"><span>Time Zone</span><strong>Asia/Tokyo</strong></div>
+          <div class="stat-row"><span>Version</span><strong>v1.0</strong></div>
+          <div class="stat-row"><span>Deploy</span><strong>Cloudflare Pages</strong></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="ems" class="section">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">EMS DASHBOARD / 03</div>
+          <h2>EMS Monitor</h2>
+        </div>
+        <p>视觉演示页面：数据为动画演示值，不用于真实医疗判断。</p>
+      </div>
+
+      <div class="monitor glass">
+        <div class="monitor-top">
+          <div><span class="live-dot"></span> MONITOR ONLINE</div>
+          <div id="monitorTime">JST --:--:--</div>
+        </div>
+
+        <div class="ecg-panel">
+          <div class="ecg-label">ECG · LEAD II <span>DEMO</span></div>
+          <canvas id="ecgCanvas" aria-label="动态心电图演示"></canvas>
+        </div>
+
+        <div class="vitals">
+          <div class="vital hr"><span>♥ HR</span><strong id="hr">76</strong><small>BPM</small></div>
+          <div class="vital spo2"><span>SpO₂</span><strong id="spo2">99</strong><small>%</small></div>
+          <div class="vital"><span>RR</span><strong id="rr">16</strong><small>/MIN</small></div>
+          <div class="vital"><span>NIBP</span><strong>120/78</strong><small>MMHG</small></div>
+          <div class="vital"><span>TEMP</span><strong>36.6</strong><small>°C</small></div>
+          <div class="vital"><span>STATUS</span><strong class="ok">NORMAL</strong><small>DEMO</small></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="interests" class="section">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">INTERESTS / 04</div>
+          <h2>兴趣爱好</h2>
+        </div>
+        <p>图片在上，介绍在下。点击卡片可以查看更大的图片。</p>
+      </div>
+
+      <div class="interest-grid">
+        <article class="interest-card glass">
+          <button class="image-button" data-lightbox="assets/images/aviation-01.jpg" aria-label="查看飞行照片">
+            <img src="assets/images/aviation-01.jpg" alt="厦门航空飞机">
+          </button>
+          <div class="interest-body"><span>01 / AVIATION</span><h3>飞行</h3><p>喜欢航空、飞机与机场，也喜欢记录旅途中看到的飞机。</p></div>
+        </article>
+        <article class="interest-card glass">
+          <button class="image-button" data-lightbox="assets/images/airport-01.jpg" aria-label="查看机场照片">
+            <img src="assets/images/airport-01.jpg" alt="机场停机坪">
+          </button>
+          <div class="interest-body"><span>02 / EMS</span><h3>EMS</h3><p>关注院前急救与急救系统主题，并把它作为本站的视觉特色。</p></div>
+        </article>
+        <article class="interest-card glass">
+          <button class="image-button" data-lightbox="assets/images/airport-03.jpg" aria-label="查看摄影照片">
+            <img src="assets/images/airport-03.jpg" alt="机场摄影">
+          </button>
+          <div class="interest-body"><span>03 / PHOTO</span><h3>摄影</h3><p>把旅途中的飞机、机场和窗外风景保存下来。</p></div>
+        </article>
+        <article class="interest-card glass">
+          <div class="icon-card">🎮</div>
+          <div class="interest-body"><span>04 / GAME</span><h3>游戏</h3><p>这里先作为个人兴趣栏目预留，之后可以继续补充内容。</p></div>
+        </article>
+        <article class="interest-card glass">
+          <div class="icon-card">🎵</div>
+          <div class="interest-body"><span>05 / MUSIC</span><h3>音乐</h3><p>Lifeline 播放器位置已预留。由于音频版权限制，当前不内置歌曲文件。</p></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="gallery" class="section">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">GALLERY / 05</div>
+          <h2>相册</h2>
+        </div>
+        <p>你提供的航空与机场照片。</p>
+      </div>
+      <div class="gallery-grid">
+        <button class="gallery-item" data-lightbox="assets/images/aviation-01.jpg"><img src="assets/images/aviation-01.jpg" alt="厦门航空"></button>
+        <button class="gallery-item tall" data-lightbox="assets/images/airport-01.jpg"><img src="assets/images/airport-01.jpg" alt="机场121号机位"></button>
+        <button class="gallery-item" data-lightbox="assets/images/aviation-02.jpg"><img src="assets/images/aviation-02.jpg" alt="中华航空"></button>
+        <button class="gallery-item" data-lightbox="assets/images/aviation-03.jpg"><img src="assets/images/aviation-03.jpg" alt="海南航空"></button>
+        <button class="gallery-item tall" data-lightbox="assets/images/airport-02.jpg"><img src="assets/images/airport-02.jpg" alt="机场停机坪"></button>
+        <button class="gallery-item tall" data-lightbox="assets/images/airport-03.jpg"><img src="assets/images/airport-03.jpg" alt="登机口附近飞机"></button>
+      </div>
+    </section>
+
+    <section class="section music-section">
+      <div class="glass music-card">
+        <div class="music-icon">♫</div>
+        <div>
+          <div class="eyebrow">MUSIC</div>
+          <h2>Lifeline</h2>
+          <p>播放器已预留。将你拥有使用权的音频文件命名为 <code>lifeline.mp3</code> 并放进 <code>assets/music/</code> 即可接入。</p>
+        </div>
+        <button class="btn ghost" id="musicBtn" disabled>未添加音频</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div>WELYOKOYO<span class="accent">EMS</span> · よこきょう的主页</div>
+    <div>Built for personal use · v1.0</div>
+  </footer>
+
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="图片预览">
+    <button class="close-lightbox" id="closeLightbox" aria-label="关闭">×</button>
+    <img id="lightboxImg" src="" alt="">
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
