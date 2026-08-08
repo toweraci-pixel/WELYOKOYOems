@@ -38,39 +38,105 @@ $("#closeLightbox").addEventListener("click", closeLightbox);
 lightbox.addEventListener("click", e => { if(e.target === lightbox) closeLightbox(); });
 document.addEventListener("keydown", e => { if(e.key === "Escape") closeLightbox(); });
 
-// ECG demo
-const canvas = $("#ecgCanvas"), ctx = canvas.getContext("2d");
-let phase = 0;
-function resizeCanvas(){
-  const r = canvas.getBoundingClientRect(), dpr = Math.min(devicePixelRatio || 1,2);
-  canvas.width = Math.floor(r.width*dpr); canvas.height = Math.floor(r.height*dpr);
-  ctx.setTransform(dpr,0,0,dpr,0,0);
+// ECG monitor
+const canvas = $("#ecgCanvas");
+const ctx = canvas.getContext("2d");
+
+let ecgX = 0;
+let lastTime = 0;
+let points = [];
+
+function resizeCanvas() {
+  const r = canvas.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+  canvas.width = Math.floor(r.width * dpr);
+  canvas.height = Math.floor(r.height * dpr);
+
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  points = [];
+  ecgX = 0;
 }
-function ecgWave(x){
-  const period = 175;
-  const p = ((x + phase) % period + period) % period;
+
+function ecgValue(t) {
+  const cycle = 0.85;
+  const p = t % cycle;
+
   let y = 0;
-  if (p > 18 && p < 40) y += Math.sin((p-18)/22*Math.PI)*-5;
-  if (p > 55 && p < 59) y += -14;
-  if (p >= 59 && p < 64) y += 48*(1-(p-59)/5);
-  if (p >= 64 && p < 69) y += -105*(1-Math.abs(p-66.5)/2.5);
-  if (p >= 69 && p < 76) y += 62*(1-(p-69)/7);
-  if (p > 100 && p < 135) y += Math.sin((p-100)/35*Math.PI)*-11;
+
+  // P wave
+  if (p > 0.08 && p < 0.18) {
+    y -= Math.sin((p - 0.08) / 0.1 * Math.PI) * 8;
+  }
+
+  // Q wave
+  if (p > 0.25 && p < 0.28) {
+    y += Math.sin((p - 0.25) / 0.03 * Math.PI) * 8;
+  }
+
+  // R wave
+  if (p > 0.28 && p < 0.32) {
+    y -= Math.sin((p - 0.28) / 0.04 * Math.PI) * 45;
+  }
+
+  // S wave
+  if (p > 0.32 && p < 0.36) {
+    y += Math.sin((p - 0.32) / 0.04 * Math.PI) * 18;
+  }
+
+  // T wave
+  if (p > 0.50 && p < 0.66) {
+    y -= Math.sin((p - 0.50) / 0.16 * Math.PI) * 12;
+  }
+
   return y;
 }
-function drawECG(){
-  const w = canvas.clientWidth, h = canvas.clientHeight;
-  ctx.clearRect(0,0,w,h);
-  ctx.beginPath();
-  for(let x=0;x<=w;x+=2){
-    const y = h/2 + ecgWave(x);
-    if(x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+
+function drawECG(time) {
+  if (!lastTime) lastTime = time;
+
+  const dt = (time - lastTime) / 1000;
+  lastTime = time;
+
+  const w = canvas.clientWidth;
+  const h = canvas.clientHeight;
+
+  ctx.clearRect(0, 0, w, h);
+
+  ecgX += dt * 100;
+
+  if (ecgX > w) {
+    ecgX = 0;
+    points = [];
   }
-  ctx.strokeStyle="#65f7df"; ctx.lineWidth=2; ctx.shadowColor="#65f7df"; ctx.shadowBlur=8; ctx.stroke(); ctx.shadowBlur=0;
-  phase += 2.5;
+
+  points.push({
+    x: ecgX,
+    y: h / 2 + ecgValue(ecgX / 100)
+  });
+
+  ctx.beginPath();
+
+  for (let i = 0; i < points.length; i++) {
+    if (i === 0) {
+      ctx.moveTo(points[i].x, points[i].y);
+    } else {
+      ctx.lineTo(points[i].x, points[i].y);
+    }
+  }
+
+  ctx.strokeStyle = "#65f7df";
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
   requestAnimationFrame(drawECG);
 }
-window.addEventListener("resize",resizeCanvas); resizeCanvas(); drawECG();
+
+window.addEventListener("resize", resizeCanvas);
+
+resizeCanvas();
+requestAnimationFrame(drawECG);
 
 // Demo vitals gently vary to keep the monitor alive.
 setInterval(()=>{
