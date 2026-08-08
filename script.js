@@ -38,104 +38,146 @@ $("#closeLightbox").addEventListener("click", closeLightbox);
 lightbox.addEventListener("click", e => { if(e.target === lightbox) closeLightbox(); });
 document.addEventListener("keydown", e => { if(e.key === "Escape") closeLightbox(); });
 
-// ECG monitor
+// ECG monitor - Sinus Rhythm Simulation
 const canvas = $("#ecgCanvas");
 const ctx = canvas.getContext("2d");
 
-let ecgTime = 0;
-let lastFrame = 0;
 let ecgPoints = [];
+let ecgOffset = 0;
+let lastFrame = 0;
+
+let heartRate = 75;
+let beatTime = 60000 / heartRate;
 
 function resizeCanvas() {
-  const rect = canvas.getBoundingClientRect();
+  const r = canvas.getBoundingClientRect();
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
-  canvas.width = rect.width * dpr;
-  canvas.height = rect.height * dpr;
+  canvas.width = Math.floor(r.width * dpr);
+  canvas.height = Math.floor(r.height * dpr);
 
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
   ecgPoints = [];
-  ecgTime = 0;
 }
 
-function ecgWave(t) {
-  // 约75 BPM
-  const cycle = 0.8;
-  const p = t % cycle;
+function sinusECG(ms) {
 
-  let v = 0;
+  // 一个心拍周期
+  const cycle = beatTime;
+  const t = ms % cycle;
+
+  let y = 0;
 
   // P wave
-  if (p > 0.10 && p < 0.18) {
-    v -= Math.sin((p - 0.10) / 0.08 * Math.PI) * 7;
+  if (t > 80 && t < 140) {
+    y -= Math.sin((t - 80) / 60 * Math.PI) * 6;
   }
 
   // Q wave
-  if (p > 0.27 && p < 0.30) {
-    v += Math.sin((p - 0.27) / 0.03 * Math.PI) * 12;
+  if (t > 220 && t < 240) {
+    y += 8;
   }
 
   // R wave
-  if (p > 0.30 && p < 0.34) {
-    v -= Math.sin((p - 0.30) / 0.04 * Math.PI) * 55;
+  if (t >= 240 && t < 260) {
+    y -= 45;
   }
 
   // S wave
-  if (p > 0.34 && p < 0.39) {
-    v += Math.sin((p - 0.34) / 0.05 * Math.PI) * 25;
+  if (t >= 260 && t < 285) {
+    y += 20;
+  }
+
+  // ST segment
+  if (t >= 285 && t < 360) {
+    y = 0;
   }
 
   // T wave
-  if (p > 0.52 && p < 0.70) {
-    v -= Math.sin((p - 0.52) / 0.18 * Math.PI) * 15;
+  if (t > 380 && t < 480) {
+    y -= Math.sin((t - 380) / 100 * Math.PI) * 10;
   }
 
-  return v;
+  return y;
 }
 
+
 function drawECG(time) {
+
   if (!lastFrame) lastFrame = time;
 
-  const delta = (time - lastFrame) / 1000;
+  const dt = time - lastFrame;
   lastFrame = time;
 
   const w = canvas.clientWidth;
   const h = canvas.clientHeight;
 
-  ecgTime += delta;
+  ctx.clearRect(0, 0, w, h);
 
-  const x = (ecgTime * 120) % w;
+  ecgOffset += dt * 0.08;
 
-  if (x < 2) {
+  if (ecgOffset > w) {
+    ecgOffset = 0;
     ecgPoints = [];
   }
 
+
   ecgPoints.push({
-    x,
-    y: h / 2 + ecgWave(ecgTime)
+    x: ecgOffset,
+    y: h / 2 + sinusECG(time)
   });
 
-  ctx.clearRect(0, 0, w, h);
+
+  // 限制点数量，保护手机性能
+  if (ecgPoints.length > 500) {
+    ecgPoints.shift();
+  }
+
 
   ctx.beginPath();
 
   for (let i = 0; i < ecgPoints.length; i++) {
-    const point = ecgPoints[i];
+
+    const p = ecgPoints[i];
 
     if (i === 0) {
-      ctx.moveTo(point.x, point.y);
+      ctx.moveTo(p.x, p.y);
     } else {
-      ctx.lineTo(point.x, point.y);
+      ctx.lineTo(p.x, p.y);
     }
+
   }
+
 
   ctx.strokeStyle = "#65f7df";
   ctx.lineWidth = 2;
   ctx.stroke();
 
+
   requestAnimationFrame(drawECG);
 }
+
+
+// HR 60-100
+setInterval(() => {
+
+  heartRate = 60 + Math.floor(Math.random() * 41);
+  beatTime = 60000 / heartRate;
+
+  $("#hr").textContent = heartRate;
+
+},3000);
+
+
+// SpO2 90-100
+setInterval(() => {
+
+  $("#spo2").textContent =
+    90 + Math.floor(Math.random() * 11);
+
+},3000);
+
 
 window.addEventListener("resize", resizeCanvas);
 
